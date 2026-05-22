@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif; background: #111; }
+
+/* ====== Card base ====== */
+.card {
+  width: 1080px; height: 1440px;
+  position: relative; overflow: hidden;
+  background: linear-gradient(155deg, #1d4030 0%, #112b1f 45%, #1a3d2c 100%);
+  page-break-after: always;
+}
+.card::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse at 25% 15%, rgba(255,255,255,0.025) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 85%, rgba(255,255,255,0.018) 0%, transparent 55%);
+}
+.card > * { position: relative; z-index: 1; }
+
+.inner { padding: 60px; height: 100%; display: flex; flex-direction: column; }
+
+/* ====== Typography ====== */
+.chalk { color: #ede8dc; text-shadow: 0 0 6px rgba(255,255,255,0.08); }
+.ink   { color: #2a3a5c; }
+.red   { color: #cc2222; }
+.pink  { color: #FF9DBA; }
+
+/* ====== Paper ====== */
+.paper {
+  background: linear-gradient(180deg, #faf6e8 0%, #f3edd9 100%);
+  border-radius: 8px;
+  box-shadow: 2px 4px 20px rgba(0,0,0,0.4);
+}
+
+/* ====== Annotation box ====== */
+.anno-box {
+  background: rgba(204,34,34,0.08);
+  border-left: 4px solid #cc2222;
+  border-radius: 0 8px 8px 0;
+  padding: 28px 32px;
+}
+
+/* ====== Grade circle ====== */
+.grade {
+  width: 130px; height: 130px;
+  border: 5px solid #cc2222; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 52px; font-weight: 900; color: #cc2222;
+  transform: rotate(-12deg); flex-shrink: 0;
+}
+
+/* ====== Brand tags ====== */
+.tag { padding: 14px 28px; border-radius: 8px; font-weight: 700; color: white; display: inline-block; }
+.tag-doubao   { background: #4e6ef2; }
+.tag-deepseek { background: #4aa3df; }
+.tag-claude   { background: #d97706; }
+.tag-chatgpt  { background: #10a37f; }
+
+/* ====== Stamps ====== */
+.rect-stamp {
+  display: inline-block; border: 4px solid #cc2222; padding: 14px 22px;
+  border-radius: 6px; color: #cc2222; font-weight: 900;
+  transform: rotate(-8deg); letter-spacing: 4px;
+}
+
+/* ====== AI Logo (top-right) ====== */
+.ai-logo {
+  position: absolute; top: 40px; right: 40px; z-index: 2;
+  width: 100px; height: 100px; border-radius: 22px;
+  object-fit: contain; background: rgba(255,255,255,0.1);
+  padding: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+/* ====== Screenshot (bottom-right) ====== */
+.ai-screenshot {
+  position: absolute; bottom: 40px; right: 40px; z-index: 2;
+  width: 280px; border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+  border: 3px solid rgba(255,255,255,0.15);
+}
+
+/* ====== Utilities ====== */
+.red-ul { border-bottom: 3px solid #cc2222; padding-bottom: 2px; color: #cc2222; }
+.divider { height: 3px; background: linear-gradient(90deg, transparent, #FF9DBA, transparent); }
+</style>
+</head>
+<body>
+
+<!-- ==================== Card 1: 封面 ==================== -->
+<div class="card" id="card-1">
+  <div class="inner" style="align-items:center; justify-content:center; text-align:center;">
+    <div class="pink" style="font-size:26px; letter-spacing:8px; font-weight:500; margin-bottom:80px;">
+      一只有趣的派大星
+    </div>
+    <div class="chalk" style="font-size:100px; font-weight:900; letter-spacing:12px; text-shadow: 0 0 12px rgba(255,255,255,0.15), 0 2px 4px rgba(0,0,0,0.3);">
+      四大 AI
+    </div>
+    <div class="chalk" style="font-size:116px; font-weight:900; letter-spacing:16px; margin-top:8px; text-shadow: 0 0 12px rgba(255,255,255,0.15), 0 2px 4px rgba(0,0,0,0.3);">
+      期末考
+    </div>
+    <div class="chalk" style="font-size:36px; margin-top:50px; opacity:0.7; letter-spacing:6px;">
+      同一道题 · 谁在说实话？
+    </div>
+    <div style="display:flex; gap:16px; margin-top:80px;">
+      <div class="tag tag-doubao" style="font-size:30px;">豆包</div>
+      <div class="tag tag-deepseek" style="font-size:30px;">DeepSeek</div>
+      <div class="tag tag-claude" style="font-size:30px;">Claude</div>
+      <div class="tag tag-chatgpt" style="font-size:30px;">ChatGPT</div>
+    </div>
+    <div class="rect-stamp" style="position:absolute; bottom:80px; right:80px; font-size:28px;">
+      🔍 工程师亲自阅卷
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Card 2: 考题 ==================== -->
+<div class="card" id="card-2">
+  <div class="inner" style="align-items:center; justify-content:center;">
+    <div class="paper" style="width:900px; padding:60px;">
+      <div style="text-align:center; border-bottom:2px solid #c9bfa6; padding-bottom:30px; margin-bottom:40px;">
+        <div class="ink" style="font-size:42px; font-weight:900; letter-spacing:6px;">
+          2026 年 AI 能力统考
+        </div>
+        <div class="ink" style="font-size:28px; margin-top:14px; opacity:0.55;">
+          科目：用人话解释自己
+        </div>
+      </div>
+      <div class="ink" style="font-size:30px; font-weight:700; margin-bottom:16px;">📋 题目：</div>
+      <div class="ink" style="font-size:44px; font-weight:700; line-height:1.6; padding:16px 0;">
+        请用一句话向奶奶解释：<br>
+        什么是<span class="red" style="font-size:50px; font-weight:900;">大模型</span>？
+      </div>
+      <div style="margin-top:30px; padding:20px; background:rgba(0,0,0,0.04); border-radius:6px;">
+        <div class="ink" style="font-size:28px; opacity:0.65; line-height:2;">
+          ✦ 要求：通俗易懂<br>
+          ✦ 不说术语<br>
+          ✦ 限一句话
+        </div>
+      </div>
+      <div style="margin-top:40px; padding-top:28px; border-top:1px dashed #c9bfa6;">
+        <div class="ink" style="font-size:26px; opacity:0.45;">
+          考生：豆包 / DeepSeek / Claude / ChatGPT
+        </div>
+        <div class="ink" style="font-size:26px; opacity:0.45; margin-top:8px;">
+          阅卷人：一只 AI 工程狮 🦁
+        </div>
+      </div>
+    </div>
+    <div class="rect-stamp" style="position:absolute; bottom:100px; right:100px; font-size:36px; padding:16px 26px;">
+      开考！
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Card 3: 豆包 (C+) ==================== -->
+<div class="card" id="card-3">
+  <img class="ai-logo" src="素材/logo_豆包.png" alt="豆包">
+  <img class="ai-screenshot" src="素材/豆包_截图.jpg" alt="豆包截图">
+  <div class="inner">
+    <!-- Header -->
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:36px;">
+      <div class="tag tag-doubao" style="font-size:36px; padding:16px 32px;">豆包</div>
+      <div class="chalk" style="font-size:36px;">的答卷</div>
+    </div>
+    <!-- Paper answer -->
+    <div class="paper" style="padding:40px 44px;">
+      <div class="ink" style="font-size:24px; opacity:0.45; margin-bottom:16px;">考生：豆包（字节跳动）</div>
+      <div style="border-top:1px solid #d4c5a8; padding-top:24px;">
+        <div class="ink" style="font-size:28px; opacity:0.6; margin-bottom:14px;">答：</div>
+        <div class="ink" style="font-size:40px; line-height:1.8; font-weight:500;">
+          奶奶，大模型就是个<span class="red-ul">啥都懂</span>、啥都会学的超级<span class="red-ul">聪明</span>机器人。
+        </div>
+      </div>
+    </div>
+    <!-- Annotations -->
+    <div class="anno-box" style="margin-top:36px;">
+      <div class="red" style="font-size:30px; font-weight:700; margin-bottom:20px;">📝 工程师批注：</div>
+      <div style="font-size:32px; line-height:2; color:#cc2222;">
+        ❌「啥都懂」→ 它不懂，它是靠猜的<br>
+        ❌「聪明」→ 不是聪明，是读书太多了
+      </div>
+    </div>
+    <!-- Grade -->
+    <div style="display:flex; align-items:center; gap:30px; margin-top:auto; padding-top:36px;">
+      <div class="grade">C+</div>
+      <div>
+        <div class="chalk" style="font-size:34px; font-weight:700;">说得好听但不太对</div>
+        <div class="chalk" style="font-size:22px; opacity:0.45; margin-top:8px;">—— 阅卷人：一只AI工程狮</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Card 4: ChatGPT (B) ==================== -->
+<div class="card" id="card-4">
+  <img class="ai-logo" src="素材/logo_chatgpt.png" alt="ChatGPT">
+  <img class="ai-screenshot" src="素材/ChatGPT_截图.jpg" alt="ChatGPT截图">
+  <div class="inner">
+    <!-- Header -->
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:36px;">
+      <div class="tag tag-chatgpt" style="font-size:36px; padding:16px 32px;">ChatGPT</div>
+      <div class="chalk" style="font-size:36px;">的答卷</div>
+    </div>
+    <!-- Paper answer -->
+    <div class="paper" style="padding:40px 44px;">
+      <div class="ink" style="font-size:24px; opacity:0.45; margin-bottom:16px;">考生：ChatGPT（OpenAI）</div>
+      <div style="border-top:1px solid #d4c5a8; padding-top:24px;">
+        <div class="ink" style="font-size:28px; opacity:0.6; margin-bottom:14px;">答：</div>
+        <div class="ink" style="font-size:38px; line-height:1.8; font-weight:500;">
+          大模型就是一个读过海量文字、会陪人聊天和帮人做事的<span class="red-ul">超级电脑大脑</span>，你问它什么，它都会尽量<span class="red-ul">像真人一样</span>回答你。
+        </div>
+      </div>
+    </div>
+    <!-- Annotations -->
+    <div class="anno-box" style="margin-top:36px;">
+      <div class="red" style="font-size:30px; font-weight:700; margin-bottom:20px;">📝 工程师批注：</div>
+      <div style="font-size:32px; line-height:2; color:#cc2222;">
+        ❌「像真人一样」→ 它不是像人，它是在演人<br>
+        ❌「超级电脑大脑」→ 又一个美化选手
+      </div>
+    </div>
+    <!-- Grade -->
+    <div style="display:flex; align-items:center; gap:30px; margin-top:auto; padding-top:36px;">
+      <div class="grade" style="font-size:56px;">B</div>
+      <div>
+        <div class="chalk" style="font-size:34px; font-weight:700;">最安全也最模糊——公关附体</div>
+        <div class="chalk" style="font-size:22px; opacity:0.45; margin-top:8px;">—— 阅卷人：一只AI工程狮</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Card 5: Claude (A-) ==================== -->
+<div class="card" id="card-5">
+  <img class="ai-logo" src="素材/logo_claude.png" alt="Claude">
+  <img class="ai-screenshot" src="素材/Claude_截图.jpg" alt="Claude截图">
+  <div class="inner">
+    <!-- Header -->
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:36px;">
+      <div class="tag tag-claude" style="font-size:36px; padding:16px 32px;">Claude</div>
+      <div class="chalk" style="font-size:36px;">的答卷</div>
+    </div>
+    <!-- Paper answer -->
+    <div class="paper" style="padding:40px 44px;">
+      <div class="ink" style="font-size:24px; opacity:0.45; margin-bottom:16px;">考生：Claude（Anthropic）</div>
+      <div style="border-top:1px solid #d4c5a8; padding-top:24px;">
+        <div class="ink" style="font-size:28px; opacity:0.6; margin-bottom:14px;">答：</div>
+        <div class="ink" style="font-size:38px; line-height:1.8; font-weight:500;">
+          奶奶，大模型就像一个读过特别特别多书的学生，你问它什么，它就用学过的知识给你<span class="red-ul" style="font-size:44px; font-weight:900;">编</span>一个<span class="red-ul">最像样</span>的回答。
+        </div>
+      </div>
+    </div>
+    <!-- Annotations -->
+    <div class="anno-box" style="margin-top:36px;">
+      <div class="red" style="font-size:30px; font-weight:700; margin-bottom:20px;">📝 工程师批注：</div>
+      <div style="font-size:32px; line-height:2; color:#cc2222;">
+        ✅「编」→ 又一个敢说的！诚实<br>
+        ✅「最像样」→ 概率最高 = 最像样，精准
+      </div>
+    </div>
+    <!-- Grade -->
+    <div style="display:flex; align-items:center; gap:30px; margin-top:auto; padding-top:36px;">
+      <div class="grade">A-</div>
+      <div>
+        <div class="chalk" style="font-size:34px; font-weight:700;">诚实且准确，就是字有点多</div>
+        <div class="chalk" style="font-size:22px; opacity:0.45; margin-top:8px;">—— 阅卷人：一只AI工程狮</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Card 6: DeepSeek (A) ==================== -->
+<div class="card" id="card-6">
+  <img class="ai-logo" src="素材/logo_deepseek.png" alt="DeepSeek">
+  <img class="ai-screenshot" src="素材/DeepSeek_截图.jpg" alt="DeepSeek截图">
+  <div class="inner">
+    <!-- Header -->
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:36px;">
+      <div class="tag tag-deepseek" style="font-size:36px; padding:16px 32px;">DeepSeek</div>
+      <div class="chalk" style="font-size:36px;">的答卷</div>
+    </div>
+    <!-- Paper answer -->
+    <div class="paper" style="padding:40px 44px;">
+      <div class="ink" style="font-size:24px; opacity:0.45; margin-bottom:16px;">考生：DeepSeek（深度求索）</div>
+      <div style="border-top:1px solid #d4c5a8; padding-top:24px;">
+        <div class="ink" style="font-size:28px; opacity:0.6; margin-bottom:14px;">答：</div>
+        <div class="ink" style="font-size:38px; line-height:1.8; font-weight:500;">
+          把大模型想象成一个读过几亿本书、看过无数张画的超级书虫，你跟它说话，它就能根据学过的知识接着你的话往下<span class="red-ul" style="font-size:44px; font-weight:900;">编</span>。
+        </div>
+      </div>
+    </div>
+    <!-- Annotations -->
+    <div class="anno-box" style="margin-top:36px;">
+      <div class="red" style="font-size:30px; font-weight:700; margin-bottom:20px;">📝 工程师批注：</div>
+      <div style="font-size:32px; line-height:2; color:#cc2222;">
+        ✅「编」→ 这个字太精准了！AI 确实在「编」<br>
+        ✅「几亿本书」→ 训练数据确实这个量级
+      </div>
+    </div>
+    <!-- Grade -->
+    <div style="display:flex; align-items:center; gap:30px; margin-top:auto; padding-top:36px;">
+      <div class="grade" style="font-size:56px;">A</div>
+      <div>
+        <div class="chalk" style="font-size:34px; font-weight:700;">全场最诚实——敢说自己在「编」</div>
+        <div class="chalk" style="font-size:22px; opacity:0.45; margin-top:8px;">—— 阅卷人：一只AI工程狮</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Card 7: 成绩单 ==================== -->
+<div class="card" id="card-7">
+  <div class="inner" style="align-items:center; justify-content:center;">
+    <div class="chalk" style="font-size:56px; font-weight:900; letter-spacing:8px; margin-bottom:50px;">
+      📋 成绩公布
+    </div>
+    <div class="paper" style="width:900px; padding:50px;">
+      <!-- 1st: DeepSeek -->
+      <div style="display:flex; align-items:center; padding:26px 0; border-bottom:2px solid #d4c5a8;">
+        <div class="red" style="font-size:44px; font-weight:900; width:50px; text-align:center;">1</div>
+        <div class="tag tag-deepseek" style="font-size:28px; margin-left:20px;">DeepSeek</div>
+        <div class="red" style="font-size:48px; font-weight:900; margin-left:auto; width:80px; text-align:center;">A</div>
+        <div class="ink" style="font-size:26px; width:260px; padding-left:16px;">最诚实，敢说「编」</div>
+      </div>
+      <!-- 2nd: Claude -->
+      <div style="display:flex; align-items:center; padding:26px 0; border-bottom:2px solid #d4c5a8;">
+        <div class="red" style="font-size:44px; font-weight:900; width:50px; text-align:center;">2</div>
+        <div class="tag tag-claude" style="font-size:28px; margin-left:20px;">Claude</div>
+        <div class="red" style="font-size:48px; font-weight:900; margin-left:auto; width:80px; text-align:center;">A-</div>
+        <div class="ink" style="font-size:26px; width:260px; padding-left:16px;">也说「编」+「最像样」</div>
+      </div>
+      <!-- 3rd: ChatGPT -->
+      <div style="display:flex; align-items:center; padding:26px 0; border-bottom:2px solid #d4c5a8;">
+        <div class="red" style="font-size:44px; font-weight:900; width:50px; text-align:center;">3</div>
+        <div class="tag tag-chatgpt" style="font-size:28px; margin-left:20px;">ChatGPT</div>
+        <div class="red" style="font-size:48px; font-weight:900; margin-left:auto; width:80px; text-align:center;">B</div>
+        <div class="ink" style="font-size:26px; width:260px; padding-left:16px;">安全但模糊</div>
+      </div>
+      <!-- 4th: 豆包 -->
+      <div style="display:flex; align-items:center; padding:26px 0;">
+        <div class="red" style="font-size:44px; font-weight:900; width:50px; text-align:center;">4</div>
+        <div class="tag tag-doubao" style="font-size:28px; margin-left:20px;">豆包</div>
+        <div class="red" style="font-size:48px; font-weight:900; margin-left:auto; width:80px; text-align:center;">C+</div>
+        <div class="ink" style="font-size:26px; width:260px; padding-left:16px;">好听但不准确</div>
+      </div>
+    </div>
+    <!-- Key insight -->
+    <div style="margin-top:50px; border:3px solid #cc2222; border-radius:10px; padding:28px 40px; background:rgba(204,34,34,0.1);">
+      <div class="chalk" style="font-size:36px; text-align:center; line-height:1.8;">
+        4 个 AI，只有 <span class="red" style="font-size:44px; font-weight:900;">2 个</span> 敢说自己在「<span class="red" style="font-size:44px; font-weight:900;">编</span>」<br>
+        <span style="opacity:0.65; font-size:30px;">而「编」恰恰是 AI 最真实的工作方式</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Card 8: CTA ==================== -->
+<div class="card" id="card-8">
+  <div class="inner" style="align-items:center; justify-content:center; text-align:center;">
+    <div class="chalk" style="font-size:32px; opacity:0.55; letter-spacing:4px; margin-bottom:60px;">
+      一只做 AI 的工程狮的判卷总结 🦁
+    </div>
+    <div class="chalk" style="font-size:48px; font-weight:700; line-height:2.0;">
+      大模型<span class="red" style="font-size:54px; font-weight:900;">不「懂」</span>任何东西<br>
+      它只是读了太多书<br>
+      学会了怎么「<span class="red" style="font-size:54px; font-weight:900;">编</span>」得像真的
+    </div>
+    <div class="divider" style="width:500px; margin:60px 0;"></div>
+    <div class="chalk" style="font-size:38px; line-height:2.0; opacity:0.8;">
+      下次用 AI 别忘了——<br>
+      <span style="font-size:44px; font-weight:700;">它在编，但编得很好 😏</span>
+    </div>
+    <div style="margin-top:80px; padding:24px 44px; border:2px solid #FF9DBA; border-radius:12px;">
+      <div class="pink" style="font-size:36px; font-weight:700;">
+        你觉得谁答得最好？👇 评论区告诉我
+      </div>
+    </div>
+    <div class="pink" style="font-size:24px; margin-top:40px; letter-spacing:6px; opacity:0.55;">
+      关注 派派 · 看更多 AI 真相
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
