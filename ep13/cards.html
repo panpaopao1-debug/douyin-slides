@@ -67,22 +67,28 @@ body { font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif
   transform: rotate(-8deg); letter-spacing: 4px;
 }
 
-/* ====== Screenshot area (between annotations and grade) ====== */
-.screenshot-area {
-  display: flex; align-items: center; gap: 24px;
-  margin-top: 28px; flex: 1; min-height: 0;
+/* ====== Evidence row: [logo + screenshot] left, annotations right ====== */
+.evidence-row {
+  display: flex; gap: 24px; margin-top: 32px;
+  flex: 1; min-height: 0; align-items: center;
+}
+.evidence-left {
+  display: flex; align-items: center; gap: 16px; flex-shrink: 0;
 }
 .ai-logo {
-  width: 80px; height: 80px; border-radius: 18px;
+  width: 70px; height: 70px; border-radius: 16px;
   object-fit: contain; background: rgba(255,255,255,0.1);
   padding: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
   flex-shrink: 0;
 }
 .ai-screenshot {
-  height: 100%; object-fit: contain;
-  border-radius: 14px;
+  width: 380px; border-radius: 14px;
   box-shadow: 0 6px 24px rgba(0,0,0,0.5);
   border: 3px solid rgba(255,255,255,0.15);
+}
+.evidence-row .anno-box {
+  flex: 1; align-self: stretch;
+  display: flex; flex-direction: column; justify-content: center;
 }
 
 /* ====== Utilities ====== */
@@ -176,18 +182,19 @@ body { font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif
         </div>
       </div>
     </div>
-    <!-- Annotations -->
-    <div class="anno-box" style="margin-top:36px;">
-      <div class="red" style="font-size:30px; font-weight:700; margin-bottom:20px;">📝 工程师批注：</div>
-      <div style="font-size:32px; line-height:2; color:#cc2222;">
-        ❌「啥都懂」→ 它不懂，它是靠猜的<br>
-        ❌「聪明」→ 不是聪明，是读书太多了
+    <!-- Evidence: screenshot left + annotations right -->
+    <div class="evidence-row">
+      <div class="evidence-left">
+        <img class="ai-logo" src="素材/logo_豆包.png" alt="豆包">
+        <img class="ai-screenshot" src="素材/豆包_截图_cropped.jpg" alt="豆包截图">
       </div>
-    </div>
-    <!-- Screenshot -->
-    <div class="screenshot-area">
-      <img class="ai-logo" src="素材/logo_豆包.png" alt="豆包">
-      <img class="ai-screenshot" src="素材/豆包_截图_cropped.jpg" alt="豆包截图">
+      <div class="anno-box">
+        <div class="red" style="font-size:28px; font-weight:700; margin-bottom:16px;">📝 工程师批注：</div>
+        <div style="font-size:28px; line-height:2; color:#cc2222;">
+          ❌「啥都懂」→ 它不懂，它是靠猜的<br>
+          ❌「聪明」→ 不是聪明，是读书太多了
+        </div>
+      </div>
     </div>
     <!-- Grade -->
     <div style="display:flex; align-items:center; gap:30px; padding-top:20px;">
@@ -218,18 +225,19 @@ body { font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif
         </div>
       </div>
     </div>
-    <!-- Annotations -->
-    <div class="anno-box" style="margin-top:36px;">
-      <div class="red" style="font-size:30px; font-weight:700; margin-bottom:20px;">📝 工程师批注：</div>
-      <div style="font-size:32px; line-height:2; color:#cc2222;">
-        ❌「像真人一样」→ 它不是像人，它是在演人<br>
-        ❌「超级电脑大脑」→ 又一个美化选手
+    <!-- Evidence: screenshot left + annotations right -->
+    <div class="evidence-row">
+      <div class="evidence-left">
+        <img class="ai-logo" src="素材/logo_chatgpt.png" alt="ChatGPT">
+        <img class="ai-screenshot" src="素材/ChatGPT_截图_cropped.jpg" alt="ChatGPT截图">
       </div>
-    </div>
-    <!-- Screenshot -->
-    <div class="screenshot-area">
-      <img class="ai-logo" src="素材/logo_chatgpt.png" alt="ChatGPT">
-      <img class="ai-screenshot" src="素材/ChatGPT_截图_cropped.jpg" alt="ChatGPT截图">
+      <div class="anno-box">
+        <div class="red" style="font-size:28px; font-weight:700; margin-bottom:16px;">📝 工程师批注：</div>
+        <div style="font-size:28px; line-height:2; color:#cc2222;">
+          ❌「像真人一样」→ 它不是像人，它是在演人<br>
+          ❌「超级电脑大脑」→ 又一个美化选手
+        </div>
+      </div>
     </div>
     <!-- Grade -->
     <div style="display:flex; align-items:center; gap:30px; padding-top:20px;">
@@ -260,18 +268,19 @@ body { font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif
         </div>
       </div>
     </div>
-    <!-- Annotations -->
-    <div class="anno-box" style="margin-top:36px;">
-      <div class="red" style="font-size:30px; font-weight:700; margin-bottom:20px;">📝 工程师批注：</div>
-      <div style="font-size:32px; line-height:2; color:#cc2222;">
-        ✅「编」→ 又一个敢说的！诚实<br>
-        ✅「最像样」→ 概率最高 = 最像样，精准
+    <!-- Evidence: screenshot left + annotations right -->
+    <div class="evidence-row">
+      <div class="evidence-left">
+        <img class="ai-logo" src="素材/logo_claude.png" alt="Claude">
+        <img class="ai-screenshot" src="素材/Claude_截图_cropped.jpg" alt="Claude截图">
       </div>
-    </div>
-    <!-- Screenshot -->
-    <div class="screenshot-area">
-      <img class="ai-logo" src="素材/logo_claude.png" alt="Claude">
-      <img class="ai-screenshot" src="素材/Claude_截图_cropped.jpg" alt="Claude截图">
+      <div class="anno-box">
+        <div class="red" style="font-size:28px; font-weight:700; margin-bottom:16px;">📝 工程师批注：</div>
+        <div style="font-size:28px; line-height:2; color:#cc2222;">
+          ✅「编」→ 又一个敢说的！诚实<br>
+          ✅「最像样」→ 概率最高 = 最像样，精准
+        </div>
+      </div>
     </div>
     <!-- Grade -->
     <div style="display:flex; align-items:center; gap:30px; padding-top:20px;">
@@ -302,18 +311,19 @@ body { font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif
         </div>
       </div>
     </div>
-    <!-- Annotations -->
-    <div class="anno-box" style="margin-top:36px;">
-      <div class="red" style="font-size:30px; font-weight:700; margin-bottom:20px;">📝 工程师批注：</div>
-      <div style="font-size:32px; line-height:2; color:#cc2222;">
-        ✅「编」→ 这个字太精准了！AI 确实在「编」<br>
-        ✅「几亿本书」→ 训练数据确实这个量级
+    <!-- Evidence: screenshot left + annotations right -->
+    <div class="evidence-row">
+      <div class="evidence-left">
+        <img class="ai-logo" src="素材/logo_deepseek.png" alt="DeepSeek">
+        <img class="ai-screenshot" src="素材/DeepSeek_截图_cropped.jpg" alt="DeepSeek截图">
       </div>
-    </div>
-    <!-- Screenshot -->
-    <div class="screenshot-area">
-      <img class="ai-logo" src="素材/logo_deepseek.png" alt="DeepSeek">
-      <img class="ai-screenshot" src="素材/DeepSeek_截图_cropped.jpg" alt="DeepSeek截图">
+      <div class="anno-box">
+        <div class="red" style="font-size:28px; font-weight:700; margin-bottom:16px;">📝 工程师批注：</div>
+        <div style="font-size:28px; line-height:2; color:#cc2222;">
+          ✅「编」→ 这个字太精准了！AI 确实在「编」<br>
+          ✅「几亿本书」→ 训练数据确实这个量级
+        </div>
+      </div>
     </div>
     <!-- Grade -->
     <div style="display:flex; align-items:center; gap:30px; padding-top:20px;">
