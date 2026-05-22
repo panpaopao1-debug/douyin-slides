@@ -82,13 +82,14 @@ body { font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif
   flex-shrink: 0;
 }
 .ai-screenshot {
-  width: 380px; border-radius: 14px;
+  width: 380px; height: 280px; object-fit: cover; object-position: top;
+  border-radius: 14px;
   box-shadow: 0 6px 24px rgba(0,0,0,0.5);
   border: 3px solid rgba(255,255,255,0.15);
 }
-.evidence-row .anno-box {
+.evidence-right {
   flex: 1; align-self: stretch;
-  display: flex; flex-direction: column; justify-content: center;
+  display: flex; flex-direction: column; justify-content: center; gap: 20px;
 }
 
 /* ====== Utilities ====== */
@@ -182,26 +183,27 @@ body { font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif
         </div>
       </div>
     </div>
-    <!-- Evidence: screenshot left + annotations right -->
+    <!-- Evidence: screenshot left + annotations & grade right -->
     <div class="evidence-row">
       <div class="evidence-left">
         <img class="ai-logo" src="素材/logo_豆包.png" alt="豆包">
         <img class="ai-screenshot" src="素材/豆包_截图_cropped.jpg" alt="豆包截图">
       </div>
-      <div class="anno-box">
-        <div class="red" style="font-size:28px; font-weight:700; margin-bottom:16px;">📝 工程师批注：</div>
-        <div style="font-size:28px; line-height:2; color:#cc2222;">
-          ❌「啥都懂」→ 它不懂，它是靠猜的<br>
-          ❌「聪明」→ 不是聪明，是读书太多了
+      <div class="evidence-right">
+        <div class="anno-box">
+          <div class="red" style="font-size:26px; font-weight:700; margin-bottom:12px;">📝 工程师批注：</div>
+          <div style="font-size:26px; line-height:1.9; color:#cc2222;">
+            ❌「啥都懂」→ 它不懂，它是靠猜的<br>
+            ❌「聪明」→ 不是聪明，是读书太多了
+          </div>
         </div>
-      </div>
-    </div>
-    <!-- Grade -->
-    <div style="display:flex; align-items:center; gap:30px; padding-top:20px;">
-      <div class="grade">C+</div>
-      <div>
-        <div class="chalk" style="font-size:34px; font-weight:700;">说得好听但不太对</div>
-        <div class="chalk" style="font-size:22px; opacity:0.45; margin-top:8px;">—— 阅卷人：一只AI工程狮</div>
+        <div style="display:flex; align-items:center; gap:20px;">
+          <div class="grade" style="width:100px; height:100px; font-size:42px;">C+</div>
+          <div>
+            <div class="chalk" style="font-size:28px; font-weight:700;">说得好听但不太对</div>
+            <div class="chalk" style="font-size:18px; opacity:0.45; margin-top:6px;">—— 阅卷人：一只AI工程狮</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -225,26 +227,27 @@ body { font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif
         </div>
       </div>
     </div>
-    <!-- Evidence: screenshot left + annotations right -->
+    <!-- Evidence: screenshot left + annotations & grade right -->
     <div class="evidence-row">
       <div class="evidence-left">
         <img class="ai-logo" src="素材/logo_chatgpt.png" alt="ChatGPT">
         <img class="ai-screenshot" src="素材/ChatGPT_截图_cropped.jpg" alt="ChatGPT截图">
       </div>
-      <div class="anno-box">
-        <div class="red" style="font-size:28px; font-weight:700; margin-bottom:16px;">📝 工程师批注：</div>
-        <div style="font-size:28px; line-height:2; color:#cc2222;">
-          ❌「像真人一样」→ 它不是像人，它是在演人<br>
-          ❌「超级电脑大脑」→ 又一个美化选手
+      <div class="evidence-right">
+        <div class="anno-box">
+          <div class="red" style="font-size:26px; font-weight:700; margin-bottom:12px;">📝 工程师批注：</div>
+          <div style="font-size:26px; line-height:1.9; color:#cc2222;">
+            ❌「像真人一样」→ 它不是像人，它是在演人<br>
+            ❌「超级电脑大脑」→ 又一个美化选手
+          </div>
         </div>
-      </div>
-    </div>
-    <!-- Grade -->
-    <div style="display:flex; align-items:center; gap:30px; padding-top:20px;">
-      <div class="grade" style="font-size:56px;">B</div>
-      <div>
-        <div class="chalk" style="font-size:34px; font-weight:700;">最安全也最模糊——公关附体</div>
-        <div class="chalk" style="font-size:22px; opacity:0.45; margin-top:8px;">—— 阅卷人：一只AI工程狮</div>
+        <div style="display:flex; align-items:center; gap:20px;">
+          <div class="grade" style="width:100px; height:100px; font-size:46px;">B</div>
+          <div>
+            <div class="chalk" style="font-size:28px; font-weight:700;">最安全也最模糊——公关附体</div>
+            <div class="chalk" style="font-size:18px; opacity:0.45; margin-top:6px;">—— 阅卷人：一只AI工程狮</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -268,26 +271,27 @@ body { font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif
         </div>
       </div>
     </div>
-    <!-- Evidence: screenshot left + annotations right -->
+    <!-- Evidence: screenshot left + annotations & grade right -->
     <div class="evidence-row">
       <div class="evidence-left">
         <img class="ai-logo" src="素材/logo_claude.png" alt="Claude">
         <img class="ai-screenshot" src="素材/Claude_截图_cropped.jpg" alt="Claude截图">
       </div>
-      <div class="anno-box">
-        <div class="red" style="font-size:28px; font-weight:700; margin-bottom:16px;">📝 工程师批注：</div>
-        <div style="font-size:28px; line-height:2; color:#cc2222;">
-          ✅「编」→ 又一个敢说的！诚实<br>
-          ✅「最像样」→ 概率最高 = 最像样，精准
+      <div class="evidence-right">
+        <div class="anno-box">
+          <div class="red" style="font-size:26px; font-weight:700; margin-bottom:12px;">📝 工程师批注：</div>
+          <div style="font-size:26px; line-height:1.9; color:#cc2222;">
+            ✅「编」→ 又一个敢说的！诚实<br>
+            ✅「最像样」→ 概率最高 = 最像样，精准
+          </div>
         </div>
-      </div>
-    </div>
-    <!-- Grade -->
-    <div style="display:flex; align-items:center; gap:30px; padding-top:20px;">
-      <div class="grade">A-</div>
-      <div>
-        <div class="chalk" style="font-size:34px; font-weight:700;">诚实且准确，就是字有点多</div>
-        <div class="chalk" style="font-size:22px; opacity:0.45; margin-top:8px;">—— 阅卷人：一只AI工程狮</div>
+        <div style="display:flex; align-items:center; gap:20px;">
+          <div class="grade" style="width:100px; height:100px; font-size:42px;">A-</div>
+          <div>
+            <div class="chalk" style="font-size:28px; font-weight:700;">诚实且准确，就是字有点多</div>
+            <div class="chalk" style="font-size:18px; opacity:0.45; margin-top:6px;">—— 阅卷人：一只AI工程狮</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -311,26 +315,27 @@ body { font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif
         </div>
       </div>
     </div>
-    <!-- Evidence: screenshot left + annotations right -->
+    <!-- Evidence: screenshot left + annotations & grade right -->
     <div class="evidence-row">
       <div class="evidence-left">
         <img class="ai-logo" src="素材/logo_deepseek.png" alt="DeepSeek">
         <img class="ai-screenshot" src="素材/DeepSeek_截图_cropped.jpg" alt="DeepSeek截图">
       </div>
-      <div class="anno-box">
-        <div class="red" style="font-size:28px; font-weight:700; margin-bottom:16px;">📝 工程师批注：</div>
-        <div style="font-size:28px; line-height:2; color:#cc2222;">
-          ✅「编」→ 这个字太精准了！AI 确实在「编」<br>
-          ✅「几亿本书」→ 训练数据确实这个量级
+      <div class="evidence-right">
+        <div class="anno-box">
+          <div class="red" style="font-size:26px; font-weight:700; margin-bottom:12px;">📝 工程师批注：</div>
+          <div style="font-size:26px; line-height:1.9; color:#cc2222;">
+            ✅「编」→ 这个字太精准了！AI 确实在「编」<br>
+            ✅「几亿本书」→ 训练数据确实这个量级
+          </div>
         </div>
-      </div>
-    </div>
-    <!-- Grade -->
-    <div style="display:flex; align-items:center; gap:30px; padding-top:20px;">
-      <div class="grade" style="font-size:56px;">A</div>
-      <div>
-        <div class="chalk" style="font-size:34px; font-weight:700;">全场最诚实——敢说自己在「编」</div>
-        <div class="chalk" style="font-size:22px; opacity:0.45; margin-top:8px;">—— 阅卷人：一只AI工程狮</div>
+        <div style="display:flex; align-items:center; gap:20px;">
+          <div class="grade" style="width:100px; height:100px; font-size:46px;">A</div>
+          <div>
+            <div class="chalk" style="font-size:28px; font-weight:700;">全场最诚实——敢说自己在「编」</div>
+            <div class="chalk" style="font-size:18px; opacity:0.45; margin-top:6px;">—— 阅卷人：一只AI工程狮</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
