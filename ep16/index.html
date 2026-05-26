@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ep16｜让AI不胡说八道 · 幻灯片</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+    user-select: none;
+    min-height: 100vh;
+    display: flex; justify-content: center; align-items: flex-start;
+    padding: 20px;
+  }
+
+  .workspace {
+    display: flex; gap: 18px; align-items: flex-start;
+    max-width: 1400px; width: 100%; justify-content: center;
+  }
+
+  /* ========== 左栏：口播脚本 ========== */
+  .script-panel {
+    width: 250px; min-width: 250px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,215,0,0.2);
+    border-radius: 10px; padding: 18px;
+    color: rgba(255,255,255,0.58); font-size: 12.5px;
+    line-height: 1.85; letter-spacing: 1px;
+    position: sticky; top: 20px;
+  }
+  .script-panel h3 {
+    color: #FFD700; font-size: 14px; margin-bottom: 14px;
+    letter-spacing: 3px; text-align: center;
+  }
+  .script-item {
+    padding: 9px 10px; margin-bottom: 4px;
+    border-radius: 6px;
+    border-left: 2px solid transparent;
+    transition: all 0.25s; cursor: pointer;
+  }
+  .script-item:hover { background: rgba(255,215,0,0.06); }
+  .script-item.current {
+    background: rgba(255,215,0,0.12);
+    border-left-color: #FFD700;
+    color: rgba(255,255,255,0.95);
+  }
+  .script-item .s-num {
+    display: inline-block; width: 20px; height: 20px;
+    line-height: 20px; text-align: center;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%; font-size: 10px; margin-right: 6px;
+    font-weight: 700; color: rgba(255,255,255,0.5);
+  }
+  .script-item.current .s-num {
+    background: #FFD700; color: #fff;
+  }
+  .script-item .s-time {
+    display: block; font-size: 10px; color: rgba(255,255,255,0.22);
+    margin-top: 1px; margin-left: 26px;
+  }
+
+  /* ========== 中栏：9:16 幻灯片 ========== */
+  .slide-viewport {
+    width: 540px; height: 960px;
+    position: relative; overflow: hidden;
+    border-radius: 4px;
+    background: #000;
+    box-shadow: 0 0 60px rgba(255,215,0,0.2), 0 0 160px rgba(255,215,0,0.08);
+  }
+
+  .slide {
+    position: absolute; inset: 0; z-index: 1;
+    display: none; flex-direction: column; justify-content: center; align-items: center;
+    padding: 140px 32px 220px;
+    color: #fff;
+  }
+  .slide.active { display: flex; }
+
+  /* ===== 通用文字 ===== */
+  .small-tag {
+    font-size: 13px; letter-spacing: 6px; color: #FFD700;
+    margin-bottom: 16px; font-weight: 600;
+  }
+  .big-title {
+    font-size: 44px; font-weight: 900; line-height: 1.2;
+    text-align: center; margin-bottom: 20px;
+  }
+  .big-title .hl { color: #FFD700; }
+  .sub-text {
+    font-size: 22px; line-height: 1.65; color: rgba(255,255,255,0.8);
+    text-align: center;
+  }
+  .footer-tag {
+    position: absolute; top: 16px; left: 0; right: 0;
+    text-align: center; font-size: 13px; letter-spacing: 4px;
+    color: rgba(255,255,255,0.25);
+  }
+  .footer-tag .acct { color: #FFD700; }
+
+  /* ===== 截图样式 ===== */
+  .screenshot {
+    width: 100%; max-height: 520px;
+    object-fit: contain; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  }
+
+  /* ===== 技巧卡片 ===== */
+  .tip-card {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,215,0,0.2);
+    border-radius: 16px;
+    padding: 32px 28px;
+    text-align: center;
+  }
+  .tip-num {
+    display: inline-block;
+    width: 48px; height: 48px; line-height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000; font-size: 24px; font-weight: 900;
+    margin-bottom: 20px;
+  }
+  .tip-title {
+    font-size: 36px; font-weight: 900; color: #FFD700;
+    line-height: 1.3; margin-bottom: 16px;
+  }
+  .tip-desc {
+    font-size: 20px; color: rgba(255,255,255,0.75);
+    line-height: 1.6;
+  }
+
+  /* ===== 原理卡片 ===== */
+  .principle-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,215,0,0.2);
+    border-radius: 16px; padding: 28px 24px;
+    width: 100%; text-align: center;
+  }
+  .principle-card .p-text {
+    font-size: 24px; font-weight: 700; line-height: 1.6; color: #fff;
+  }
+  .principle-card .p-text .hl { color: #FFD700; }
+
+  /* ===== 金句 ===== */
+  .golden-rule {
+    background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,165,0,0.08));
+    border: 2px solid rgba(255,215,0,0.4);
+    border-radius: 20px; padding: 36px 28px;
+    text-align: center; width: 100%;
+  }
+  .golden-rule .rule {
+    font-size: 32px; font-weight: 900; line-height: 1.4;
+    color: #fff;
+  }
+  .golden-rule .rule .hl { color: #FFD700; }
+
+  /* ===== CTA ===== */
+  .cta-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 16px; padding: 24px;
+    text-align: center; width: 100%;
+    margin-top: 20px;
+  }
+
+  /* ===== 字幕条 ===== */
+  .subtitle-bar {
+    position: absolute; bottom: 160px; left: 40px; right: 40px;
+    font-size: 22px; font-weight: 700; color: #fff;
+    background: rgba(0,0,0,0.55);
+    padding: 10px 16px; border-radius: 8px;
+    text-align: center; z-index: 100;
+    line-height: 1.5;
+  }
+
+  /* ===== 导航 ===== */
+  .nav-hint {
+    position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; color: rgba(255,255,255,0.2); letter-spacing: 2px;
+    z-index: 100;
+  }
+
+  /* ===== 右栏：备注 ===== */
+  .notes-panel {
+    width: 220px; min-width: 220px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px; padding: 16px;
+    color: rgba(255,255,255,0.4); font-size: 12px;
+    line-height: 1.7; position: sticky; top: 20px;
+  }
+  .notes-panel h4 {
+    font-size: 12px; letter-spacing: 3px; color: rgba(255,255,255,0.3);
+    margin-bottom: 10px;
+  }
+  .note-block { margin-bottom: 12px; }
+  .note-block .n-title { color: #FFD700; font-weight: 600; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<div class="workspace">
+
+  <!-- 左栏：口播脚本 -->
+  <div class="script-panel">
+    <h3>口 播 脚 本</h3>
+    <div class="script-item current" data-slide="0">
+      <span class="s-num">1</span>钩子：AI又胡说八道了
+      <span class="s-time">0 – 5s</span>
+    </div>
+    <div class="script-item" data-slide="1">
+      <span class="s-num">2</span>过渡：怎么治？
+      <span class="s-time">5 – 8s</span>
+    </div>
+    <div class="script-item" data-slide="2">
+      <span class="s-num">3</span>技巧①：你确定吗？
+      <span class="s-time">8 – 16s</span>
+    </div>
+    <div class="script-item" data-slide="3">
+      <span class="s-num">4</span>技巧②：给AI身份
+      <span class="s-time">16 – 24s</span>
+    </div>
+    <div class="script-item" data-slide="4">
+      <span class="s-num">5</span>技巧③：一次一个问题
+      <span class="s-time">24 – 32s</span>
+    </div>
+    <div class="script-item" data-slide="5">
+      <span class="s-num">6</span>技巧④：说不知道
+      <span class="s-time">32 – 40s</span>
+    </div>
+    <div class="script-item" data-slide="6">
+      <span class="s-num">7</span>对比演示
+      <span class="s-time">40 – 50s</span>
+    </div>
+    <div class="script-item" data-slide="7">
+      <span class="s-num">8</span>解释：为啥管用
+      <span class="s-time">50 – 60s</span>
+    </div>
+    <div class="script-item" data-slide="8">
+      <span class="s-num">9</span>金句
+      <span class="s-time">60 – 65s</span>
+    </div>
+    <div class="script-item" data-slide="9">
+      <span class="s-num">10</span>CTA
+      <span class="s-time">65 – 72s</span>
+    </div>
+  </div>
+
+  <!-- 中栏：幻灯片 -->
+  <div class="slide-viewport">
+
+    <!-- Slide 1: 钩子 — AI又胡说八道了 + 截图 -->
+    <div class="slide active" id="s0">
+      <div class="small-tag">真 实 翻 车 现 场</div>
+      <div class="big-title" style="font-size:38px; margin-bottom:16px;">
+        AI又<span class="hl">胡说八道</span>了
+      </div>
+      <img class="screenshot" src="素材/doubao_fake_search_cropped.jpg" alt="豆包编造搜索结果">
+      <div class="subtitle-bar">问豆包一个问题，它答得特自信。一查，全是编的。</div>
+      <div class="footer-tag">一只有趣的 <span class="acct">派大星</span></div>
+    </div>
+
+    <!-- Slide 2: 过渡 — 怎么治 -->
+    <div class="slide" id="s1">
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;">
+        <div style="font-size:72px;margin-bottom:24px;">🤔</div>
+        <div class="big-title" style="font-size:48px;">
+          <span class="hl">怎么治？</span>
+        </div>
+        <div style="height:3px;width:80px;background:#FFD700;margin:20px auto;border-radius:2px;"></div>
+        <div class="sub-text" style="font-size:26px;">
+          让我教你几个<span style="color:#FFD700;font-weight:700;">实用技巧</span>
+        </div>
+      </div>
+      <div class="subtitle-bar">很多人不知道怎么治。让我教你一些实用技巧。</div>
+      <div class="footer-tag">一只有趣的 <span class="acct">派大星</span></div>
+    </div>
+
+    <!-- Slide 3: 技巧卡1 — 你确定吗？ -->
+    <div class="slide" id="s2">
+      <div class="tip-card">
+        <div class="tip-num">1</div>
+        <div class="tip-title">"你确定吗？"</div>
+        <div class="tip-desc">
+          追问一句<br>它就会重新检查自己的回答
+        </div>
+      </div>
+      <div class="subtitle-bar">追问一句"你确定吗"，它就会重新检查自己的回答。</div>
+      <div class="footer-tag">一只有趣的 <span class="acct">派大星</span></div>
+    </div>
+
+    <!-- Slide 4: 技巧卡2 — 给AI一个身份 -->
+    <div class="slide" id="s3">
+      <div class="tip-card">
+        <div class="tip-num">2</div>
+        <div class="tip-title">"给AI一个身份"</div>
+        <div class="tip-desc">
+          比如"你是一个严谨的医学顾问"<br>它就不敢瞎编了
+        </div>
+      </div>
+      <div class="subtitle-bar">比如说"你是一个严谨的医学顾问"，它就不敢瞎编了。</div>
+      <div class="footer-tag">一只有趣的 <span class="acct">派大星</span></div>
+    </div>
+
+    <!-- Slide 5: 技巧卡3 — 一次只问一个问题 -->
+    <div class="slide" id="s4">
+      <div class="tip-card">
+        <div class="tip-num">3</div>
+        <div class="tip-title">"一次只问一个问题"</div>
+        <div class="tip-desc">
+          问题越多，它越容易乱<br>一个一个来，准确率高得多
+        </div>
+      </div>
+      <div class="subtitle-bar">问题越多，它越容易乱。一个一个来，准确率高得多。</div>
+      <div class="footer-tag">一只有趣的 <span class="acct">派大星</span></div>
+    </div>
+
+    <!-- Slide 6: 技巧卡4 — 如果不确定，就说不知道 -->
+    <div class="slide" id="s5">
+      <div class="tip-card">
+        <div class="tip-num">4</div>
+        <div class="tip-title" style="font-size:30px;">"如果不确定，就说不知道"</div>
+        <div class="tip-desc">
+          把这句话加在你的提示词里<br>它真的会说"我不确定"
+        </div>
+      </div>
+      <div class="subtitle-bar">把这句话加在提示词里，它真的会说"我不确定"。</div>
+      <div class="footer-tag">一只有趣的 <span class="acct">派大星</span></div>
+    </div>
+
+    <!-- Slide 7: 对比演示 — 加之前 vs 加之后 -->
+    <div class="slide" id="s6">
+      <div class="small-tag">对 比 演 示</div>
+      <div class="big-title" style="font-size:32px; margin-bottom:24px;">
+        同一个问题，<span class="hl">效果天差地别</span>
+      </div>
+      <div style="width:100%;display:flex;flex-direction:column;gap:12px;">
+        <div style="background:rgba(204,51,51,0.1);border-left:4px solid #CC3333;border-radius:10px;padding:16px 18px;">
+          <div style="font-size:12px;font-weight:700;letter-spacing:3px;color:#CC3333;margin-bottom:6px;">❌ 没加技巧</div>
+          <div style="font-size:17px;color:rgba(255,255,255,0.8);line-height:1.6;">回答得特别自信，但一查全是编的</div>
+        </div>
+        <div style="font-size:36px;text-align:center;color:rgba(255,255,255,0.3);">⬇</div>
+        <div style="background:rgba(76,175,80,0.1);border-left:4px solid #4CAF50;border-radius:10px;padding:16px 18px;">
+          <div style="font-size:12px;font-weight:700;letter-spacing:3px;color:#4CAF50;margin-bottom:6px;">✅ 加了技巧</div>
+          <div style="font-size:17px;color:rgba(255,255,255,0.8);line-height:1.6;">会标注"我不确定"，给出可查证的来源</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;font-size:14px;color:rgba(255,255,255,0.3);text-align:center;">
+        💡 此处可替换为实际豆包对比截图
+      </div>
+      <div class="subtitle-bar">同样的问题，加了这些技巧之后，回答质量完全不一样。</div>
+      <div class="footer-tag">一只有趣的 <span class="acct">派大星</span></div>
+    </div>
+
+    <!-- Slide 8: 解释 — 为啥管用 -->
+    <div class="slide" id="s7">
+      <div class="small-tag">底 层 逻 辑</div>
+      <div style="width:100%;display:flex;flex-direction:column;gap:16px;">
+        <div class="principle-card">
+          <div style="font-size:48px;margin-bottom:12px;">🧠</div>
+          <div class="p-text">
+            AI不是故意<span class="hl">骗你</span>
+          </div>
+        </div>
+        <div class="principle-card">
+          <div style="font-size:48px;margin-bottom:12px;">💬</div>
+          <div class="p-text">
+            它的本能就是<span class="hl">接话</span><br>
+            <span style="font-size:18px;color:rgba(255,255,255,0.6);">哪怕不懂也硬编</span>
+          </div>
+        </div>
+        <div class="principle-card">
+          <div style="font-size:48px;margin-bottom:12px;">📏</div>
+          <div class="p-text">
+            你给它<span class="hl">规则</span><br>它就守规矩了
+          </div>
+        </div>
+      </div>
+      <div class="subtitle-bar">AI不是故意骗你。它的本能就是接话。你给它规则，它就守规矩了。</div>
+      <div class="footer-tag">一只有趣的 <span class="acct">派大星</span></div>
+    </div>
+
+    <!-- Slide 9: 金句 -->
+    <div class="slide" id="s8">
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;">
+        <div style="font-size:72px;margin-bottom:24px;">💡</div>
+        <div class="golden-rule">
+          <div class="rule">
+            它不是<span class="hl">坏</span><br>
+            是没人教它<br>说<span class="hl">不知道</span>
+          </div>
+        </div>
+      </div>
+      <div class="subtitle-bar">它不是坏，是没人教它说不知道。</div>
+      <div class="footer-tag">一只有趣的 <span class="acct">派大星</span></div>
+    </div>
+
+    <!-- Slide 10: CTA -->
+    <div class="slide" id="s9">
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;">
+        <div style="font-size:72px;margin-bottom:20px;">⭐</div>
+        <div class="big-title" style="font-size:36px;">
+          觉得有用<br>点个<span class="hl">关注</span>
+        </div>
+        <div style="height:2px;width:60px;background:#FFD700;margin:16px auto;border-radius:2px;"></div>
+        <div class="cta-box" style="margin-top:24px;">
+          <div style="font-size:16px;color:rgba(255,255,255,0.5);margin-bottom:8px;letter-spacing:3px;">下期预告</div>
+          <div style="font-size:22px;font-weight:800;color:#fff;">怎么让AI帮你写周报<br>3分钟搞定</div>
+        </div>
+        <div style="margin-top:28px;display:flex;align-items:center;gap:10px;">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#FFD700,#FF6B6B);display:flex;align-items:center;justify-content:center;font-size:22px;">⭐</div>
+          <div>
+            <div style="font-size:18px;font-weight:800;color:#fff;">一只有趣的派大星</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.4);">在职 AI 工程师 · 帮你搞懂 AI</div>
+          </div>
+        </div>
+      </div>
+      <div class="subtitle-bar">觉得有用，点个关注。下期教你怎么让AI帮你写周报。</div>
+      <div class="footer-tag">👆 关注不迷路</div>
+    </div>
+
+  </div>
+
+  <!-- 右栏：备注 -->
+  <div class="notes-panel">
+    <h4>制 作 备 注</h4>
+    <div class="note-block">
+      <div class="n-title">配色</div>
+      金色强调 #FFD700 + 纯黑 #000
+    </div>
+    <div class="note-block">
+      <div class="n-title">时长</div>
+      ~72 秒，10 页
+    </div>
+    <div class="note-block">
+      <div class="n-title">风格</div>
+      技巧卡片 / 实用教程
+    </div>
+    <div class="note-block">
+      <div class="n-title">素材</div>
+      豆包搜索翻车截图 ×1<br>
+      对比截图待补 ×1
+    </div>
+    <div class="note-block">
+      <div class="n-title">待办</div>
+      ① 对比演示页补实际截图<br>
+      ② TTS 录音 → 字幕条对齐
+    </div>
+    <div class="note-block">
+      <div class="n-title">键盘操作</div>
+      ← → 或点击左侧脚本
+    </div>
+  </div>
+
+</div>
+
+<div class="nav-hint">← →  切换幻灯片</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const items = document.querySelectorAll('.script-item');
+let cur = 0;
+
+function go(n) {
+  if (n < 0 || n >= slides.length) return;
+  slides[cur].classList.remove('active');
+  items[cur].classList.remove('current');
+  cur = n;
+  slides[cur].classList.add('active');
+  items[cur].classList.add('current');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') go(cur + 1);
+  if (e.key === 'ArrowLeft') go(cur - 1);
+});
+
+items.forEach(item => {
+  item.addEventListener('click', () => {
+    go(parseInt(item.dataset.slide));
+  });
+});
+</script>
+
+</body>
+</html>
