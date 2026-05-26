@@ -42,14 +42,15 @@ video{display:none}
 'use strict';
 
 // ============ CONFIG ============
+const DPR_=window.devicePixelRatio||1;
 const SMOOTH       = 0.6;
-const FORM_DIST    = 200;
-const MIN_R        = 25;
-const MAX_R        = 100;
-const R_SCALE      = 0.38;
+const FORM_DIST    = 250*DPR_;
+const MIN_R        = 45*DPR_;
+const MAX_R        = 220*DPR_;
+const R_SCALE      = 0.55;
 const XFER_SPEED   = 0.055;
-const HOLD_ABOVE   = 1.6;
-const P_COUNT      = 55;
+const HOLD_ABOVE   = 1.4;
+const P_COUNT      = 80;
 const GRACE_MS     = 350;
 const FADE_IN      = 0.04;
 const FADE_OUT     = 0.015;
