@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>掌心能量球</title>
+<title>掌心能量球 v2</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:#000}
@@ -41,45 +41,66 @@ video{display:none}
 (()=>{
 'use strict';
 
+const DPR=window.devicePixelRatio||1;
+
 // ============ CONFIG ============
-const DPR_=window.devicePixelRatio||1;
 const SMOOTH       = 0.6;
-const FORM_DIST    = 250*DPR_;
-const MIN_R        = 45*DPR_;
-const MAX_R        = 220*DPR_;
-const R_SCALE      = 0.55;
-const XFER_SPEED   = 0.055;
-const HOLD_ABOVE   = 1.4;
-const P_COUNT      = 80;
-const GRACE_MS     = 350;
-const FADE_IN      = 0.04;
-const FADE_OUT     = 0.015;
+const FORM_DIST    = 250*DPR;
+const MIN_R        = 50*DPR;
+const MAX_R        = 350*DPR;
+const R_SCALE      = 0.7;
+const HOLD_ABOVE   = 0.6;
+const GRACE_MS     = 400;
+const FADE_IN      = 0.035;
+const FADE_OUT     = 0.012;
+
+// Particle layers
+const CORE_N   = 50;   // inner 25% — white hot
+const MID_N    = 100;  // 25-70% — blue-white
+const OUTER_N  = 60;   // 70-100% — blue, faint
+const TOTAL_N  = CORE_N+MID_N+OUTER_N;
 
 // ============ STATE ============
-const S={IDLE:0,FORM:1,GROW:2,XFER:3,HOLD:4};
+const S={IDLE:0,FORM:1,GROW:2,HOLD:3};
 let state=S.IDLE;
 
 let bx=0,by=0,br=MIN_R,bAlpha=0;
 let tx=0,ty=0,tr=MIN_R;
+let holdR=MIN_R;
 
-let xfX=0,xfY=0,xfT=0;
+// Smoothed hands
+let sAnchor=null; // right hand (screen left) = anchor
+let sControl=null; // left hand (screen right) = size control
+let lastTwo=0;
 
-let sL=null,sR=null;
-let sPalm={x:0,y:0};
-let lastTwo=0, lastOne=0;
+// ============ PARTICLES ============
+function makeParticle(layer){
+  const rMin=layer===0?0:layer===1?0.25:0.7;
+  const rMax=layer===0?0.25:layer===1?0.7:1.0;
+  const rBand=rMin+Math.random()*(rMax-rMin);
+  const szBase=layer===0?(2.5+Math.random()*3):layer===1?(3+Math.random()*4):(2+Math.random()*3);
+  return{
+    layer,
+    rBand,
+    th:Math.random()*Math.PI*2,
+    ph:(Math.random()-0.5)*Math.PI,
+    spd:(0.3+Math.random()*1.0)*(layer===0?1.5:layer===1?1.0:0.6),
+    espd:0.15+Math.random()*0.35,
+    sz:szBase*DPR,
+    a:layer===0?(0.7+Math.random()*0.3):layer===1?(0.4+Math.random()*0.5):(0.15+Math.random()*0.35),
+    ps:Math.random()*Math.PI*2,
+    drift:Math.random()*0.3
+  };
+}
 
-const DPR=window.devicePixelRatio||1;
-
-// Particles
-const pts=Array.from({length:P_COUNT},()=>({
-  th:Math.random()*Math.PI*2,
-  ph:Math.random()*Math.PI-Math.PI/2,
-  spd:0.4+Math.random()*1.2,
-  espd:0.2+Math.random()*0.4,
-  sz:(1+Math.random()*2.5)*DPR,
-  a:0.3+Math.random()*0.7,
-  ps:Math.random()*Math.PI*2
-}));
+let pts=[];
+function initParticles(){
+  pts=[];
+  for(let i=0;i<CORE_N;i++) pts.push(makeParticle(0));
+  for(let i=0;i<MID_N;i++) pts.push(makeParticle(1));
+  for(let i=0;i<OUTER_N;i++) pts.push(makeParticle(2));
+}
+initParticles();
 
 // ============ CANVAS ============
 const canvas=document.getElementById('c');
@@ -117,8 +138,6 @@ function sm(prev,cur,f){
   return{x:prev.x*f+cur.x*(1-f), y:prev.y*f+cur.y*(1-f)}
 }
 
-function easeOut(t){return 1-(1-t)**3}
-
 // ============ PROCESS ============
 function processHands(results){
   const hands=results.multiHandLandmarks||[];
@@ -126,81 +145,79 @@ function processHands(results){
   const dr=coverRect(vid.videoWidth,vid.videoHeight);
   const now=performance.now();
 
-  const stateNames=['IDLE','FORM','GROW','XFER','HOLD'];
-  statusEl.textContent=stateNames[state]+' | hands:'+hands.length+' | r:'+Math.round(br/DPR);
+  const names=['IDLE','FORM','GROW','HOLD'];
+  statusEl.textContent=names[state]+' | hands:'+hands.length+' | r:'+Math.round(br/DPR);
 
   if(hands.length>=2){
     const p0=palm(hands[0],dr), p1=palm(hands[1],dr);
-    const[left,right]=p0.x<p1.x?[p0,p1]:[p1,p0];
+    // Screen-left = user's right hand = anchor
+    const[anchor,control]=p0.x<p1.x?[p0,p1]:[p1,p0];
 
-    sL=sm(sL,left,SMOOTH);
-    sR=sm(sR,right,SMOOTH);
+    sAnchor=sm(sAnchor,anchor,SMOOTH);
+    sControl=sm(sControl,control,SMOOTH);
     lastTwo=now;
 
-    const dist=Math.hypot(sR.x-sL.x,sR.y-sL.y);
-    const mid={x:(sL.x+sR.x)/2, y:(sL.y+sR.y)/2};
+    const dist=Math.hypot(sControl.x-sAnchor.x,sControl.y-sAnchor.y);
 
     if(state===S.IDLE){
       if(dist<FORM_DIST){
         state=S.FORM;
-        bx=mid.x;by=mid.y;br=MIN_R;
+        bx=sAnchor.x;by=sAnchor.y;br=MIN_R;
       }
     }
 
     if(state===S.FORM){
-      tx=mid.x;ty=mid.y;tr=MIN_R;
+      tx=sAnchor.x;
+      ty=sAnchor.y-br*HOLD_ABOVE;
+      tr=MIN_R;
       bAlpha=Math.min(1,bAlpha+FADE_IN);
-      if(bAlpha>=0.95)state=S.GROW;
+      if(bAlpha>=0.9) state=S.GROW;
     }
 
-    if(state===S.GROW||state===S.XFER||state===S.HOLD){
+    if(state===S.GROW||state===S.HOLD){
       state=S.GROW;
-      tx=mid.x;ty=mid.y;
+      tx=sAnchor.x;
+      ty=sAnchor.y-br*HOLD_ABOVE;
       tr=Math.max(MIN_R,Math.min(MAX_R,dist*R_SCALE));
       bAlpha=Math.min(1,bAlpha+FADE_IN);
     }
 
   }else if(hands.length===1){
     const p=palm(hands[0],dr);
-    sPalm=sm(sPalm.x?sPalm:p, p, SMOOTH);
-    lastOne=now;
+    // This remaining hand is the anchor (right hand)
+    sAnchor=sm(sAnchor,p,SMOOTH);
 
-    if(state===S.GROW&&(now-lastTwo)>GRACE_MS){
-      xfX=bx;xfY=by;xfT=0;
-      state=S.XFER;
-    }
-
-    if(state===S.XFER){
-      xfT=Math.min(1,xfT+XFER_SPEED);
-      const e=easeOut(xfT);
-      tx=xfX+(sPalm.x-xfX)*e;
-      ty=xfY+(sPalm.y-br*HOLD_ABOVE-xfY)*e;
-      tr=Math.max(MIN_R,tr-(tr-MIN_R)*0.02);
-      if(xfT>=1)state=S.HOLD;
+    if((state===S.GROW)&&(now-lastTwo)>GRACE_MS){
+      holdR=br; // lock current size
+      state=S.HOLD;
     }
 
     if(state===S.HOLD){
-      const t=performance.now()/1000;
-      tx=sPalm.x;
-      ty=sPalm.y-br*HOLD_ABOVE+Math.sin(t*1.8)*4*DPR;
+      tx=sAnchor.x;
+      ty=sAnchor.y-holdR*HOLD_ABOVE;
+      tr=holdR;
       bAlpha=1;
+      // gentle breathing
+      const breath=Math.sin(now/1000*2)*0.03;
+      tr=holdR*(1+breath);
     }
 
     if(state===S.FORM){
-      tx=sPalm.x;ty=sPalm.y;
+      tx=sAnchor.x;
+      ty=sAnchor.y-br*HOLD_ABOVE;
     }
 
   }else{
     if(state!==S.IDLE){
       bAlpha-=FADE_OUT;
-      if(bAlpha<=0){bAlpha=0;state=S.IDLE;sL=null;sR=null;}
+      if(bAlpha<=0){bAlpha=0;state=S.IDLE;sAnchor=null;sControl=null;}
     }
   }
 
-  const ps=state===S.XFER?0.4:0.55;
+  const ps=0.5;
   bx=bx*ps+tx*(1-ps);
   by=by*ps+ty*(1-ps);
-  br=br*0.75+tr*0.25;
+  br=br*0.8+tr*0.2;
 }
 
 // ============ DRAW ============
@@ -226,100 +243,77 @@ function draw(results){
 function drawBall(t){
   ctx.save();
 
-  // Outer glow
-  ctx.globalAlpha=bAlpha*0.55;
-  const og=ctx.createRadialGradient(bx,by,br*0.2,bx,by,br*2.5);
-  og.addColorStop(0,'rgba(70,150,255,0.4)');
-  og.addColorStop(0.4,'rgba(40,110,240,0.15)');
-  og.addColorStop(1,'rgba(20,60,200,0)');
-  ctx.fillStyle=og;
-  ctx.beginPath();
-  ctx.arc(bx,by,br*2.5,0,Math.PI*2);
-  ctx.fill();
-
-  // Sphere body with 3D shading
-  ctx.globalAlpha=bAlpha*0.85;
-  const hlx=bx-br*0.25,hly=by-br*0.25;
-  const sg=ctx.createRadialGradient(hlx,hly,br*0.05,bx,by,br);
-  sg.addColorStop(0,'rgba(185,220,255,0.75)');
-  sg.addColorStop(0.2,'rgba(100,175,255,0.6)');
-  sg.addColorStop(0.55,'rgba(45,125,235,0.35)');
-  sg.addColorStop(1,'rgba(20,70,200,0.06)');
-  ctx.fillStyle=sg;
-  ctx.beginPath();
-  ctx.arc(bx,by,br,0,Math.PI*2);
-  ctx.fill();
-
-  // White core
-  const cr=br*0.18;
-  ctx.globalAlpha=bAlpha;
-  ctx.shadowColor='rgba(210,235,255,0.95)';
-  ctx.shadowBlur=cr*4;
-  const cg=ctx.createRadialGradient(bx,by,0,bx,by,cr*1.8);
-  cg.addColorStop(0,'rgba(255,255,255,1)');
-  cg.addColorStop(0.35,'rgba(225,242,255,0.9)');
-  cg.addColorStop(1,'rgba(120,190,255,0)');
-  ctx.fillStyle=cg;
-  ctx.beginPath();
-  ctx.arc(bx,by,cr*1.8,0,Math.PI*2);
-  ctx.fill();
-  ctx.shadowBlur=0;
-
-  // Orbiting particles
-  for(const p of pts){
+  // Sort particles by depth for back-to-front rendering
+  const sorted=pts.map(p=>{
     const theta=p.th+t*p.spd;
-    const phi=p.ph+Math.sin(t*p.espd+p.ps)*0.4;
-    const r=br*(0.7+0.3*Math.sin(t*0.7+p.ps));
-
+    const phi=p.ph+Math.sin(t*p.espd+p.ps)*0.35+Math.sin(t*0.3+p.ps*2)*p.drift;
     const ct=Math.cos(theta),st=Math.sin(theta);
     const cp=Math.cos(phi),sp=Math.sin(phi);
-    const px=bx+ct*cp*r;
-    const py=by+sp*r*0.65+st*cp*r*0.35;
     const depth=ct*cp;
+    const r=br*p.rBand*(0.85+0.15*Math.sin(t*0.8+p.ps));
+    const px=bx+ct*cp*r;
+    const py=by+sp*r*0.7+st*cp*r*0.3;
+    return{...p,px,py,depth,theta,phi};
+  }).sort((a,b)=>a.depth-b.depth);
 
-    const a=p.a*(0.35+0.65*Math.max(0,depth))*bAlpha;
-    const sz=p.sz*(0.55+0.45*depth);
-    if(a<0.02)continue;
+  for(const p of sorted){
+    const depthFactor=0.3+0.7*Math.max(0,(p.depth+1)/2);
+    const alpha=p.a*depthFactor*bAlpha;
+    if(alpha<0.015)continue;
 
-    ctx.globalAlpha=a;
-    ctx.shadowColor='rgba(130,200,255,0.5)';
-    ctx.shadowBlur=sz*2.5;
-    ctx.fillStyle=depth>0?
-      `rgba(195,225,255,${a})`:`rgba(60,130,255,${a*0.35})`;
+    const sizeMul=0.5+0.5*depthFactor;
+    const sz=p.sz*sizeMul*(br/MIN_R*0.3+0.7);
+    const finalSz=Math.max(1,Math.min(sz,12*DPR));
+
+    // Color by layer
+    let r,g,b;
+    if(p.layer===0){
+      // Core: white to light blue
+      const w=0.7+0.3*depthFactor;
+      r=Math.round(200+55*w);
+      g=Math.round(220+35*w);
+      b=255;
+    }else if(p.layer===1){
+      // Mid: blue-white
+      r=Math.round(80+100*depthFactor);
+      g=Math.round(150+80*depthFactor);
+      b=255;
+    }else{
+      // Outer: deep blue
+      r=Math.round(30+60*depthFactor);
+      g=Math.round(80+80*depthFactor);
+      b=Math.round(200+55*depthFactor);
+    }
+
+    ctx.globalAlpha=alpha;
+    ctx.shadowColor=`rgba(${r},${g},${b},${Math.min(1,alpha*1.5)})`;
+    ctx.shadowBlur=finalSz*(p.layer===0?4:p.layer===1?3:2);
+    ctx.fillStyle=`rgba(${r},${g},${b},${alpha})`;
     ctx.beginPath();
-    ctx.arc(px,py,Math.max(0.5,sz),0,Math.PI*2);
+    ctx.arc(p.px,p.py,finalSz,0,Math.PI*2);
     ctx.fill();
   }
+
   ctx.shadowBlur=0;
 
-  // Energy arcs between palms during GROW
-  if(state===S.GROW&&sL&&sR){
-    ctx.lineWidth=1.5*DPR;
-    ctx.shadowColor='rgba(100,180,255,0.3)';
-    ctx.shadowBlur=8*DPR;
-    for(let i=0;i<3;i++){
-      const w=Math.sin(t*3+i*2.1)*22*DPR;
-      ctx.globalAlpha=bAlpha*0.2;
-      ctx.strokeStyle='rgba(110,185,255,0.5)';
+  // Energy arcs between hands during GROW
+  if(state===S.GROW&&sAnchor&&sControl){
+    ctx.lineWidth=2*DPR;
+    for(let i=0;i<4;i++){
+      const w=Math.sin(t*3.5+i*1.7)*18*DPR;
+      const a=bAlpha*0.15;
+      ctx.globalAlpha=a;
+      ctx.strokeStyle=`rgba(120,190,255,${a})`;
+      ctx.shadowColor='rgba(100,180,255,0.2)';
+      ctx.shadowBlur=6*DPR;
       ctx.beginPath();
-      ctx.moveTo(sL.x,sL.y);
-      ctx.quadraticCurveTo(bx,by+w,sR.x,sR.y);
+      ctx.moveTo(sAnchor.x,sAnchor.y);
+      ctx.quadraticCurveTo((sAnchor.x+sControl.x)/2,
+        (sAnchor.y+sControl.y)/2+w,
+        sControl.x,sControl.y);
       ctx.stroke();
     }
     ctx.shadowBlur=0;
-  }
-
-  // Breathing pulse in HOLD
-  if(state===S.HOLD){
-    const pulse=0.5+0.5*Math.sin(t*2.5);
-    ctx.globalAlpha=bAlpha*pulse*0.15;
-    const pg=ctx.createRadialGradient(bx,by,br*0.5,bx,by,br*1.8);
-    pg.addColorStop(0,'rgba(130,200,255,0.3)');
-    pg.addColorStop(1,'rgba(60,140,255,0)');
-    ctx.fillStyle=pg;
-    ctx.beginPath();
-    ctx.arc(bx,by,br*1.8,0,Math.PI*2);
-    ctx.fill();
   }
 
   ctx.restore();
